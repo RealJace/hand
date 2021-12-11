@@ -165,30 +165,8 @@ local mouse = owner:GetMouse()
 local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:WaitForChild("HumanoidRootPart")
 local currentTarget = nil
 
-local ChangeCamRotation = Instance.new("BindableEvent",char)
-
-ChangeCamRotation.Name = "ChangeCamRotation"
-
-NLS([==[
-local rs = game:GetService("RunService")
-local plr = game:GetService("Players").LocalPlayer
-local char = plr.Character or plr.CharacterAdded:Wait()
-local event = char:WaitForChild("ChangeCamRotation")
-while task.wait() do
-	event:Fire(plr.Name,workspace.CurrentCamera.CFrame.Rotation)
-end
-]==],char)
-
 hum.MaxHealth = math.huge
 hum.Health = hum.MaxHealth
-
-local CameraRotation = CFrame.Angles(0,0,0)
-
-ChangeCamRotation.Event:Connect(function(plrName,rotation)
-	if plrName == owner.Name then
-		CameraRotation = rotation
-	end
-end)
 
 local Hand = Instance.new("Part")
 local Offset = Vector3.new(0,2,0)
@@ -210,15 +188,9 @@ SpecialMesh1.Parent = Hand
 SpecialMesh1.MeshId = "http://www.roblox.com/asset/?id=32054761"
 SpecialMesh1.MeshType = Enum.MeshType.FileMesh
 
-local function getRotationBetween(u, v, axis)
-	local dot, uxv = u:Dot(v), u:Cross(v)
-	return CFrame.new():Lerp(CFrame.new(0, 0, 0, uxv.x, uxv.y, uxv.z, dot), 0.5)
-end
-
-
 coroutine.wrap(function()
 	while task.wait() do
-		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CameraRotation * CFrame.Angles(0,0,math.rad(180)),0.3)
+		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position,mouse.Hit.Position).Rotation * CFrame.Angles(0,0,math.rad(180)),0.3)
 	end
 end)()
 
