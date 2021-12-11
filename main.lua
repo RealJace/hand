@@ -155,7 +155,7 @@ local char = owner.Character or owner.CharacterAdded:Wait()
 
 local hum = char:FindFirstChildWhichIsA("Humanoid")
 
-if hum.RigType == Enum.RigType.R15 then 
+if hum.RigType == Enum.HumanoidRigType.R15 then 
 	error("This script only supports R6, change your rig type to R6 and run this script again.") 
 else
 	print("Script loaded succesfully, enjoy!")
