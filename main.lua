@@ -74,31 +74,33 @@ do
 			UIS:TriggerEvent(b and "InputBegan" or "InputEnded",io,false)
 		end
 	end)
-	Event.Parent = NLS([==[local Event = script:WaitForChild("UserInput_Event")
-	local Mouse = owner:GetMouse()
-	local UIS = game:GetService("UserInputService")
-	local input = function(io,RobloxHandled)
-		if RobloxHandled then return end
-		--Since InputObject is a client-side instance, we create and pass table instead
-		Event:FireServer({KeyCode=io.KeyCode,UserInputType=io.UserInputType,UserInputState=io.UserInputState,Hit=Mouse.Hit,Target=Mouse.Target})
-	end
-	UIS.InputBegan:Connect(input)
-	UIS.InputEnded:Connect(input)
+	pcall(function()
+		Event.Parent = NLS([==[local Event = script:WaitForChild("UserInput_Event")
+			local Mouse = owner:GetMouse()
+			local UIS = game:GetService("UserInputService")
+			local input = function(io,RobloxHandled)
+				if RobloxHandled then return end
+				--Since InputObject is a client-side instance, we create and pass table instead
+				Event:FireServer({KeyCode=io.KeyCode,UserInputType=io.UserInputType,UserInputState=io.UserInputState,Hit=Mouse.Hit,Target=Mouse.Target})
+			end
+			UIS.InputBegan:Connect(input)
+			UIS.InputEnded:Connect(input)
 
-	local h,t
-	--Give the server mouse data every second frame, but only if the values changed
-	--If player is not moving their mouse, client won't fire events
-	local HB = game:GetService("RunService").Heartbeat
-	while true do
-		if h~=Mouse.Hit or t~=Mouse.Target then
-			h,t=Mouse.Hit,Mouse.Target
-			Event:FireServer({isMouse=true,Target=t,Hit=h})
-		end
-		--Wait 2 frames
-		for i=1,2 do
-			HB:Wait()
-		end
-	end]==],script)
+			local h,t
+			--Give the server mouse data every second frame, but only if the values changed
+			--If player is not moving their mouse, client won't fire events
+			local HB = game:GetService("RunService").Heartbeat
+			while true do
+				if h~=Mouse.Hit or t~=Mouse.Target then
+					h,t=Mouse.Hit,Mouse.Target
+					Event:FireServer({isMouse=true,Target=t,Hit=h})
+				end
+				--Wait 2 frames
+				for i=1,2 do
+					HB:Wait()
+				end
+			end]==],script)
+	end)
 
 	----Sandboxed game object that allows the usage of client-side methods and services
 	--Real game object
@@ -155,7 +157,7 @@ local char = owner.Character or owner.CharacterAdded:Wait()
 
 local hum = char:FindFirstChildWhichIsA("Humanoid")
 
-if hum.RigType == Enum.HumanoidRigType.R15 then --Github this line !!!!!1!111!!!!
+if hum.RigType == Enum.HumanoidRigType.R15 then 
 	error("This script only supports R6, change your rig type to R6 and run this script again.") 
 else
 	print("Script loaded succesfully, enjoy!")
@@ -164,6 +166,7 @@ end
 local mouse = owner:GetMouse()
 local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:WaitForChild("HumanoidRootPart")
 local currentTarget = nil
+local destroying = nil
 
 hum.MaxHealth = math.huge
 hum.Health = hum.MaxHealth
@@ -175,8 +178,9 @@ Hand.Name = "Hand"
 Hand.Parent = char
 Hand.BrickColor = char["Right Arm"].BrickColor
 Hand.Size = Vector3.new(4,4,2)
+Hand.Locked = true
 Hand.Anchored = true
-Hand.CanCollide = false
+Hand.CanCollide = true
 Hand.CanQuery = false
 Hand.CanTouch = false
 Hand.BrickColor = BrickColor.new("Institutional white")
@@ -190,7 +194,7 @@ SpecialMesh1.MeshType = Enum.MeshType.FileMesh
 
 coroutine.wrap(function()
 	while true do
-		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position,mouse.Hit.Position).Rotation * CFrame.Angles(0,0,math.rad(180)),0.3)
+		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position, mouse.Hit.Position) * CFrame.Angles(0,0,math.rad(180)),0.3)
 		game:GetService("RunService").Stepped:Wait()
 	end
 end)()
@@ -213,6 +217,8 @@ mouse.Button1Down:Connect(function()
 								end
 							end
 						end
+						i.CanQuery = false
+						i.CanTouch = false
 					end
 				end
 				mouse.TargetFilter = model
@@ -227,17 +233,6 @@ mouse.Button1Down:Connect(function()
 	end
 end)
 
-hum.StateChanged:Connect(function(old,new)
-	if hum.Health > 0 then
-		if new == Enum.HumanoidStateType.Seated or new == Enum.HumanoidStateType.PlatformStanding or old == Enum.HumanoidStateType.Seated or old == Enum.HumanoidStateType.PlatformStanding then
-			hum.PlatformStand = false
-			hum.Sit = false
-			hum.Jump = true
-			print("anti platform and sit has been triggered")
-		end
-	end
-end)
-
 mouse.KeyDown:Connect(function(key)
 	if key == "q" then
 		if currentTarget ~= nil then
@@ -248,6 +243,9 @@ mouse.KeyDown:Connect(function(key)
 			for _,i in pairs(currentTarget:GetDescendants()) do
 				if i:IsA("NoCollisionConstraint") and i.Name == "HandNoCollision" then
 					i:Destroy()
+				elseif i:IsA("BasePart") then
+					i.CanQuery = true
+					i.CanTouch = true
 				end
 			end
 			mouse.TargetFilter = nil
@@ -265,4 +263,119 @@ mouse.KeyDown:Connect(function(key)
 			mouse.TargetFilter = nil
 		end
 	end
+end)
+
+mouse.KeyDown:Connect(function(key)
+	if key == "e" then
+		if currentTarget ~= nil then
+			for _,i in pairs(Hand:GetDescendants()) do
+				if i:IsA("Weld") then
+					i:Destroy()
+				end
+			end
+			for _,i in pairs(currentTarget:GetDescendants()) do
+				if i:IsA("NoCollisionConstraint") and i.Name == "HandNoCollision" then
+					i:Destroy()
+				elseif i:IsA("BasePart") then
+					i.CanQuery = true
+					i.CanTouch = true
+				end
+			end
+			local hum = currentTarget:FindFirstChildWhichIsA("Humanoid")
+			if hum then
+				hum.PlatformStand = true
+			end
+			local death = Instance.new("Sound",currentTarget:FindFirstChild("HumanoidRootPart") or currentTarget:FindFirstChild("Torso") or currentTarget:FindFirstChild("Head"))
+			death.Volume = 3
+			death.SoundId = "rbxassetid://8223381672"
+			death:Play()
+			for _,joint in pairs(currentTarget:GetDescendants()) do
+				if joint:IsA("Motor6D") or joint:IsA("Weld") then
+					if joint.Parent.Name ~= "HumanoidRootPart" then
+						local A1 = Instance.new("Attachment")
+						local A2 = Instance.new("Attachment")
+						local socket = Instance.new("BallSocketConstraint")
+						A1.Name = "A1"
+						A2.Name = "A2"
+						A1.Parent = joint.Part0
+						A2.Parent = joint.Part1
+						A1.CFrame = joint.C0
+						A2.CFrame = joint.C1
+						socket.Name = "Socket"
+						socket.Parent = joint.Parent
+						socket.Attachment0 = A1
+						socket.Attachment1 = A2
+						socket.LimitsEnabled = true
+						socket.TwistLimitsEnabled = true
+					else
+						joint.Parent.Anchored = true
+						joint.Parent.CanCollide = false
+					end
+					joint.Enabled = false
+				end
+			end
+			for _,joint in pairs(currentTarget:GetDescendants()) do
+				if joint:IsA("Motor6D") or joint:IsA("Weld") then
+					if joint.Part1.Name == "Right Arm" or joint.Part1.Name == "Left Arm" or joint.Part1.Name == "Right Leg" or joint.Part1.Name == "Left Leg" or joint.Part1.Name == "Head" then
+						local part = Instance.new("Part",currentTarget)
+						part.Massless = true
+						part.Size = Vector3.new(0.5,0.5,0.5)
+						part.Transparency = 1
+						local weld = Instance.new("Weld",joint.Part1)
+						weld.Part0 = joint.Part1
+						weld.Part1 = part
+						weld.C0 = joint.C1
+					end
+				end
+			end
+			mouse.TargetFilter = nil
+			currentTarget = nil
+		else
+			for _,i in pairs(Hand:GetDescendants()) do
+				if i:IsA("Weld") then
+					i:Destroy()
+				end
+			end
+			mouse.TargetFilter = nil
+		end
+	end
+end)
+
+destroying = Hand.Destroying:Connect(function()
+	Hand.Name = "Hand"
+	Hand.Parent = char
+	Hand.BrickColor = char["Right Arm"].BrickColor
+	Hand.Size = Vector3.new(4,4,2)
+	Hand.Locked = true
+	Hand.Anchored = true
+	Hand.CanCollide = false
+	Hand.CanQuery = false
+	Hand.CanTouch = false
+	Hand.BrickColor = BrickColor.new("Institutional white")
+	Hand.Material = Enum.Material.Slate
+	Hand.brickColor = BrickColor.new("Institutional white")
+	Hand.FormFactor = Enum.FormFactor.Plate
+	Hand.formFactor = Enum.FormFactor.Plate
+	SpecialMesh1.Parent = Hand
+	SpecialMesh1.MeshId = "http://www.roblox.com/asset/?id=32054761"
+	SpecialMesh1.MeshType = Enum.MeshType.FileMesh
+	destroying = Hand.Destroying:Connect(function()
+		Hand.Name = "Hand"
+		Hand.Parent = char
+		Hand.BrickColor = char["Right Arm"].BrickColor
+		Hand.Size = Vector3.new(4,4,2)
+		Hand.Locked = true
+		Hand.Anchored = true
+		Hand.CanCollide = false
+		Hand.CanQuery = false
+		Hand.CanTouch = false
+		Hand.BrickColor = BrickColor.new("Institutional white")
+		Hand.Material = Enum.Material.Slate
+		Hand.brickColor = BrickColor.new("Institutional white")
+		Hand.FormFactor = Enum.FormFactor.Plate
+		Hand.formFactor = Enum.FormFactor.Plate
+		SpecialMesh1.Parent = Hand
+		SpecialMesh1.MeshId = "http://www.roblox.com/asset/?id=32054761"
+		SpecialMesh1.MeshType = Enum.MeshType.FileMesh
+	end)
 end)
