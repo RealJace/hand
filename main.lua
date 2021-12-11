@@ -179,7 +179,7 @@ Hand.Parent = char
 Hand.BrickColor = char["Right Arm"].BrickColor
 Hand.Size = Vector3.new(4,4,2)
 Hand.Locked = true
-Hand.Anchored = true
+Hand.Anchored = false
 Hand.CanCollide = true
 Hand.CanQuery = false
 Hand.CanTouch = false
@@ -284,6 +284,7 @@ mouse.KeyDown:Connect(function(key)
 			local hum = currentTarget:FindFirstChildWhichIsA("Humanoid")
 			if hum then
 				hum.PlatformStand = true
+						hum.Health -= math.huge
 			end
 			local death = Instance.new("Sound",currentTarget:FindFirstChild("HumanoidRootPart") or currentTarget:FindFirstChild("Torso") or currentTarget:FindFirstChild("Head"))
 			death.Volume = 3
