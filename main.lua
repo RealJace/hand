@@ -189,8 +189,9 @@ SpecialMesh1.MeshId = "http://www.roblox.com/asset/?id=32054761"
 SpecialMesh1.MeshType = Enum.MeshType.FileMesh
 
 coroutine.wrap(function()
-	while task.wait() do
+	while true do
 		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position,mouse.Hit.Position).Rotation * CFrame.Angles(0,0,math.rad(180)),0.3)
+		game:GetService("RunService").Stepped:Wait()
 	end
 end)()
 
