@@ -199,6 +199,18 @@ coroutine.wrap(function()
 	end
 end)()
 
+coroutine.wrap(function()
+	for _,i in pairs(char:GetDescendants()) do
+		if i:IsA("BasePart") then
+			i:GetPropertyChangedSignal("Anchored"):Connect(function()
+				if i.Anchored == true then
+					i.Anchored = false
+				end
+			end)
+		end
+	end
+end)
+
 mouse.Button1Down:Connect(function()
 	if mouse.Target then
 		local model = mouse.Target:FindFirstAncestorWhichIsA("Model")
@@ -284,7 +296,6 @@ mouse.KeyDown:Connect(function(key)
 			local hum = currentTarget:FindFirstChildWhichIsA("Humanoid")
 			if hum then
 				hum.PlatformStand = true
-						hum.Health -= math.huge
 			end
 			local death = Instance.new("Sound",currentTarget:FindFirstChild("HumanoidRootPart") or currentTarget:FindFirstChild("Torso") or currentTarget:FindFirstChild("Head"))
 			death.Volume = 3
