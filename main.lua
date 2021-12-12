@@ -74,7 +74,7 @@ do
 			UIS:TriggerEvent(b and "InputBegan" or "InputEnded",io,false)
 		end
 	end)
-	
+
 	Event.Parent = NLS([==[local Event = script:WaitForChild("UserInput_Event")
 			local Mouse = owner:GetMouse()
 			local UIS = game:GetService("UserInputService")
@@ -343,7 +343,7 @@ mouse.KeyDown:Connect(function(key)
 			death.SoundId = "rbxassetid://8223381672"
 			death:Play()
 			for _,joint in pairs(currentTarget:GetDescendants()) do
-				if joint:IsA("Motor6D") or joint:IsA("Weld") then
+				if joint:IsA("JointInstance") then
 					if joint.Parent.Name ~= "HumanoidRootPart" then
 						local A1 = Instance.new("Attachment")
 						local A2 = Instance.new("Attachment")
@@ -368,7 +368,7 @@ mouse.KeyDown:Connect(function(key)
 				end
 			end
 			for _,joint in pairs(currentTarget:GetDescendants()) do
-				if joint:IsA("Motor6D") or joint:IsA("Weld") then
+				if joint:IsA("JointInstance") then
 					if joint.Part1.Name == "Right Arm" or joint.Part1.Name == "Left Arm" or joint.Part1.Name == "Right Leg" or joint.Part1.Name == "Left Leg" or joint.Part1.Name == "Head" then
 						local part = Instance.new("Part",currentTarget)
 						part.Massless = true
