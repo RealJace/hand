@@ -194,7 +194,7 @@ SpecialMesh1.MeshType = Enum.MeshType.FileMesh
 
 coroutine.wrap(function()
 	while true do
-		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.Angles(math.rad(CFrame.lookAt(hrp.Position, mouse.Hit.Position).Rotation.X),math.rad(CFrame.lookAt(hrp.Position, mouse.Hit.Position).Rotation.Y),math.rad(180)),0.3)
+		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position, mouse.Hit.Position).Rotation * CFrame.Angles(0,0,math.rad(180)),0.5)
 		game:GetService("RunService").Stepped:Wait()
 	end
 end)()
