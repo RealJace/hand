@@ -74,8 +74,8 @@ do
 			UIS:TriggerEvent(b and "InputBegan" or "InputEnded",io,false)
 		end
 	end)
-	pcall(function()
-		Event.Parent = NLS([==[local Event = script:WaitForChild("UserInput_Event")
+	
+	Event.Parent = NLS([==[local Event = script:WaitForChild("UserInput_Event")
 			local Mouse = owner:GetMouse()
 			local UIS = game:GetService("UserInputService")
 			local input = function(io,RobloxHandled)
@@ -99,8 +99,7 @@ do
 				for i=1,2 do
 					HB:Wait()
 				end
-			end]==],script)
-	end)
+	end]==],script)
 
 	----Sandboxed game object that allows the usage of client-side methods and services
 	--Real game object
