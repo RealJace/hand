@@ -166,7 +166,8 @@ end
 local mouse = owner:GetMouse()
 local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:WaitForChild("HumanoidRootPart")
 local currentTarget = nil
-local destroying = nil
+
+local chat = game:GetService("Chat")
 
 hum.MaxHealth = math.huge
 hum.Health = hum.MaxHealth
@@ -194,7 +195,7 @@ SpecialMesh1.MeshType = Enum.MeshType.FileMesh
 
 coroutine.wrap(function()
 	while true do
-		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position, mouse.Hit.Position) * CFrame.Angles(0,0,math.rad(180)),0.3)
+		Hand.CFrame = Hand.CFrame:Lerp(CFrame.new(mouse.Hit.Position + Offset) * CFrame.lookAt(hrp.Position, mouse.Hit.Position).Rotation * CFrame.Angles(0,0,math.rad(180)),0.3)
 		game:GetService("RunService").Stepped:Wait()
 	end
 end)()
@@ -240,6 +241,47 @@ mouse.Button1Down:Connect(function()
 				weld.Part0 = Hand
 				weld.Part1 = targetHrp
 				weld.C0 = CFrame.new(0,0,-1) * CFrame.Angles(0,0,math.rad(180))
+			elseif currentTarget ~= nil then
+				local oldweld = Hand:FindFirstChildWhichIsA("Weld")
+				if oldweld then
+					oldweld:Destroy()
+				end
+				for _,i in pairs(currentTarget:GetDescendants()) do
+					if i:IsA("NoCollisionConstraint") and i.Name == "HandNoCollision" then
+						i:Destroy()
+					elseif i:IsA("BasePart") then
+						i.CanQuery = true
+						i.CanTouch = true
+					end
+				end
+				local hum = currentTarget:FindFirstChildWhichIsA("Humanoid")
+				if hum then
+					hum.PlatformStand = false
+					hum.Jump = true
+				end
+				for _,i in pairs(model:GetDescendants()) do
+					if i:IsA("BasePart") then
+						if not i:FindFirstChild("HandNoCollision") then
+							for _,x in pairs(char:GetDescendants()) do
+								if x:IsA("BasePart") then
+									local ncc2 = Instance.new("NoCollisionConstraint",i)
+									ncc2.Part0 = i
+									ncc2.Part1 = x
+									ncc2.Name = "HandNoCollision"
+								end
+							end
+						end
+						i.CanQuery = false
+						i.CanTouch = false
+					end
+				end
+				mouse.TargetFilter = model
+				currentTarget = model
+				targetHrp.Anchored = false
+				local weld = Instance.new("Weld",Hand)
+				weld.Part0 = Hand
+				weld.Part1 = targetHrp
+				weld.C0 = CFrame.new(0,0,-1) * CFrame.Angles(0,0,math.rad(180))
 			end
 		end
 	end
@@ -260,7 +302,7 @@ mouse.KeyDown:Connect(function(key)
 					i.CanTouch = true
 				end
 			end
-			mouse.TargetFilter = nil
+			mouse.TargetFilter = Hand
 			local hum = currentTarget:FindFirstChildWhichIsA("Humanoid")
 			if hum then
 				hum.PlatformStand = false
@@ -272,7 +314,7 @@ mouse.KeyDown:Connect(function(key)
 			if weld then
 				weld:Destroy()
 			end
-			mouse.TargetFilter = nil
+			mouse.TargetFilter = Hand
 		end
 	end
 end)
@@ -353,41 +395,6 @@ mouse.KeyDown:Connect(function(key)
 	end
 end)
 
-destroying = Hand.Destroying:Connect(function()
-	Hand.Name = "Hand"
-	Hand.Parent = char
-	Hand.BrickColor = char["Right Arm"].BrickColor
-	Hand.Size = Vector3.new(4,4,2)
-	Hand.Locked = true
-	Hand.Anchored = true
-	Hand.CanCollide = false
-	Hand.CanQuery = false
-	Hand.CanTouch = false
-	Hand.BrickColor = BrickColor.new("Institutional white")
-	Hand.Material = Enum.Material.Slate
-	Hand.brickColor = BrickColor.new("Institutional white")
-	Hand.FormFactor = Enum.FormFactor.Plate
-	Hand.formFactor = Enum.FormFactor.Plate
-	SpecialMesh1.Parent = Hand
-	SpecialMesh1.MeshId = "http://www.roblox.com/asset/?id=32054761"
-	SpecialMesh1.MeshType = Enum.MeshType.FileMesh
-	destroying = Hand.Destroying:Connect(function()
-		Hand.Name = "Hand"
-		Hand.Parent = char
-		Hand.BrickColor = char["Right Arm"].BrickColor
-		Hand.Size = Vector3.new(4,4,2)
-		Hand.Locked = true
-		Hand.Anchored = true
-		Hand.CanCollide = false
-		Hand.CanQuery = false
-		Hand.CanTouch = false
-		Hand.BrickColor = BrickColor.new("Institutional white")
-		Hand.Material = Enum.Material.Slate
-		Hand.brickColor = BrickColor.new("Institutional white")
-		Hand.FormFactor = Enum.FormFactor.Plate
-		Hand.formFactor = Enum.FormFactor.Plate
-		SpecialMesh1.Parent = Hand
-		SpecialMesh1.MeshId = "http://www.roblox.com/asset/?id=32054761"
-		SpecialMesh1.MeshType = Enum.MeshType.FileMesh
-	end)
+Hand.Destroying:Connect(function()
+	chat:Chat(char,"noooo my hand!!!1!!!111!!!!1!!!1 😰😢😢😢😢😭😭😭😤😤😤😤😩😩😩😩",Enum.ChatColor.Red)
 end)
