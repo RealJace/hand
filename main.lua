@@ -372,7 +372,7 @@ mouse.KeyDown:Connect(function(key)
 			end
 			for _,joint in pairs(currentTarget:GetDescendants()) do
 				if joint:IsA("JointInstance") then
-					pcall(function()
+					if joint.Part1 ~= nil then
 						if joint.Part1.Name == "Right Arm" or joint.Part1.Name == "Left Arm" or joint.Part1.Name == "Right Leg" or joint.Part1.Name == "Left Leg" or joint.Part1.Name == "Head" then
 							local part = Instance.new("Part",currentTarget)
 							part.Massless = true
@@ -382,7 +382,7 @@ mouse.KeyDown:Connect(function(key)
 							weld.Part0 = joint.Part1
 							weld.Part1 = part
 							weld.C0 = joint.C1
-						end
+						end			
 					end
 				end
 			end
